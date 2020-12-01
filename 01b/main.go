@@ -9,13 +9,13 @@ import (
 )
 
 func main() {
-	err := find()
+	err := solve()
 	if err != nil {
 		panic(err)
 	}
 }
 
-func find() error {
+func solve() error {
 	f, err := os.Open("input")
 	if err != nil {
 		return err
@@ -32,17 +32,43 @@ func find() error {
 		numbers = append(numbers, n)
 	}
 
-	for i := 0; i < len(numbers)-2; i++ {
-		a := numbers[i]
-		for j := i + 1; j < len(numbers)-1; j++ {
-			b := numbers[j]
-			for k := j + 1; k < len(numbers); k++ {
-				c := numbers[k]
-				if a+b+c == 2020 {
-					fmt.Printf("%v * %v * %v= %v\n", a, b, c, a*b*c)
-					return nil
-				}
+	return find(numbers, 3, 2020)
+}
+
+func find(numbers []int, n, s int) error {
+	counters := make([]int, n)
+
+	for {
+		sum := 0
+		var vals []int
+		for _, c := range counters {
+			vals = append(vals, numbers[c])
+			sum += numbers[c]
+		}
+
+		if sum == s {
+			mul := 1
+			for _, v := range vals {
+				mul *= v
 			}
+			fmt.Printf("%v\n", mul)
+			return nil
+		}
+
+		carry := true
+		for i := range counters {
+			if carry {
+				counters[i]++
+				carry = false
+			}
+			if counters[i] >= len(numbers) {
+				counters[i] = 0
+				carry = true
+			}
+		}
+
+		if carry {
+			break
 		}
 	}
 
